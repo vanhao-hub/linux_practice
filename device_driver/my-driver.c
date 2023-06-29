@@ -7,6 +7,7 @@
 // headr use for device drvier
 #include <linux/cdev.h>
 #include <linux/device.h>
+#include <linux/ioctl.h>
 
 #define DV_LICENSE		"GPL"
 #define DV_AU 			"vovanhao97.hcmute@gmail.com"
@@ -14,6 +15,13 @@
 #define DV_VER			"1.0"
 #define DRIVER_NAME "MyDeviceDriver"
 #define DRIVER_CLASS	"MyModulesClass"
+
+// Define IO command which is match with IO command defined in user app.
+#define WR_VALUE _IOW('a','a',int32_t*)
+#define RD_VALUE _IOR('a','b',int32_t*)
+
+
+int32_t value = 0;
 
 static dev_t mydevice_nr;
 static struct class *my_class;
@@ -47,12 +55,36 @@ static ssize_t driver_write(struct file *File, const char *user_buffer, size_t s
 	return size;
 };
 
+static long etx_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
+{
+         switch(cmd) {
+                case WR_VALUE: // content of IO command 'WR_VALUE'
+                        if( copy_from_user(&value ,(int32_t*) arg, sizeof(value)) )
+                        {
+                                pr_err("Data Write : Err!\n");
+                        }
+                        pr_info("Value = %d\n", value);
+                        break;
+                case RD_VALUE: // content of IO command 'WR_VALUE'
+                        if( copy_to_user((int32_t*) arg, &value, sizeof(value)) )
+                        {
+                                pr_err("Data Read : Err!\n");
+                        }
+                        break;
+                default:
+                        pr_info("Default\n");
+                        break;
+        }
+        return 0;
+}
+
 static const struct file_operations f_ops = {
 	.owner = THIS_MODULE,
 	.open	= driver_open,
 	.read	= driver_read,
-	.release	= driver_close,
 	.write	= driver_write,
+	.unlocked_ioctl = etx_ioctl,
+	.release	= driver_close,
 };
 
 static int my_driver_init(void)
@@ -63,8 +95,8 @@ static int my_driver_init(void)
 		printk("Driver could not be alllocated \n");
 		return -1;
 	}
-	printk("My-driver : Major %d , Minor %d \n", mydevice_nr >> 20, mydevice_nr&&0xfffff);
-
+	//printk("My-driver : Major %d , Minor %d \n", mydevice_nr >> 20, mydevice_nr&&0xfffff);
+	printk("Major : %d , Minor : %d \n", MAJOR(mydevice_nr), MINOR(mydevice_nr));
 	if((my_class = class_create(THIS_MODULE, DRIVER_CLASS)) == NULL)
 	{
 		printk("Device class can not be created \n");
@@ -86,6 +118,7 @@ static int my_driver_init(void)
 		unregister_chrdev_region(mydevice_nr, 1);
 		return -1;
 	}
+	
 	return 0;
 }
 
