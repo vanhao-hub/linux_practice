@@ -33,19 +33,17 @@ static ssize_t driver_write(struct file *File, const char *user_buffer, size_t s
 	return size;
 };
 
-
-static const struct file_operations f_ops = {
-	.owner = THIS_MODULE,
-	.open	= driver_open,
-	.read	= driver_read,
-	.write	= driver_write,
-	.release	= driver_close,
+static const struct proc_ops fproc_ops = {
+	.proc_open	= driver_open,
+	.proc_read	= driver_read,
+	.proc_release	= driver_close,
+	.proc_write	= driver_write,
 };
 
 static int my_driver_init(void)
 {
 	printk("Init kernel module my-deriver \n");
-	driver_proc = proc_create("my-driver", 0666, NULL, &f_ops);
+	driver_proc = proc_create("my-driver", 0666, NULL, &fproc_ops);
 	if(driver_proc == NULL) return -1;
 	else
 	return 0;

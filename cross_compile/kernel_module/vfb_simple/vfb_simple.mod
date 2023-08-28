@@ -1,0 +1,2 @@
+/home/vanhao/bbb/cross_compile/kernel_module/vfb_simple/vfb_simple.o
+

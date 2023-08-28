@@ -1,0 +1,1 @@
+cmd_/home/vanhao/bbb/cross_compile/kernel_module/vfb_simple/vfb_simple.mod := { echo  /home/vanhao/bbb/cross_compile/kernel_module/vfb_simple/vfb_simple.o;  echo; } > /home/vanhao/bbb/cross_compile/kernel_module/vfb_simple/vfb_simple.mod

@@ -1,8 +1,8 @@
-MODULE = my-driver
+MODULE = vfb_simple
 obj-m += ${MODULE}.o
 
-CROSS=/home/my-linux-os/bbb/kernelbuildscripts/dl/gcc-8.5.0-nolibc/arm-linux-gnueabi/bin/arm-linux-gnueabi-
-KERNEL=/home/my-linux-os/bbb/kernelbuildscripts/KERNEL/
+CROSS=/home/vanhao/bbb/kernelbuildscripts/dl/gcc-8.5.0-nolibc/arm-linux-gnueabi/bin/arm-linux-gnueabi-
+KERNEL=/home/vanhao/bbb/kernelbuildscripts/KERNEL/
 
 all:
 	make ARCH=arm CROSS_COMPILE=${CROSS} -C ${KERNEL} M=$(PWD) modules
